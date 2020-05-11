@@ -32,9 +32,24 @@ struct ContentView: View {
                         .animation(.linear)
                 }
             }.padding()
+            
+            HStack(alignment: .center, spacing: 0) {
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        self.storyTimer.advance(by: -1)
+                }
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        self.storyTimer.advance(by: 1)
+                }
+            }
         }
         .onAppear { self.storyTimer.start() }
-        
+        .onDisappear{ self.storyTimer.stop() }
     }
 }
 
@@ -84,6 +99,15 @@ class StoryTimer: ObservableObject {
             if Int(newProgress) >= self.max { newProgress = 0 }
             self.progress = newProgress
         })
+    }
+    
+    func stop() {
+        self.cancellable?.cancel()
+    }
+    
+    func advance(by number: Int) {
+        let newProgress = max((Int(self.progress) + number) % self.max, 0)
+        self.progress = Double(newProgress)
     }
 }
 
